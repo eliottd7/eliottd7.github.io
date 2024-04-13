@@ -4,8 +4,8 @@
         @media screen and (min-width: 200px) {
             body {
                 background-color: black;
-                width: 90vw;
-                height: 90vh;
+                width: 95vw;
+                height: 95vh;
                 border: black;
             }
 
@@ -17,6 +17,7 @@
 </head>
 <body>
     <div id="main">
+        <p color="white">eliott dinfotan \\ student, computer engineer, explorer</p>
         <canvas id="main_board"></canvas>
     </div>
 <script>
@@ -28,7 +29,7 @@
     csize = Math.min(canvas.width, canvas.height)
 
     function resizeCanvas() {
-        csize = 0.95*window.innerWidth;
+        canvas.width = 0.95*window.innerWidth;
         canvas.height = 0.95*window.innerHeight;
         csize = Math.min(canvas.width, canvas.height)
     }
