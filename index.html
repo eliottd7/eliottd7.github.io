@@ -25,10 +25,12 @@
     const context = canvas.getContext('2d');
     // resize the canvas to fill browser window dynamically
     window.addEventListener('resize', resizeCanvas, false);
+    csize = Math.min(canvas.width, canvas.height)
 
     function resizeCanvas() {
-        canvas.width = 0.95*window.innerWidth;
+        csize = 0.95*window.innerWidth;
         canvas.height = 0.95*window.innerHeight;
+        csize = Math.min(canvas.width, canvas.height)
     }
 
     resizeCanvas();
@@ -56,7 +58,7 @@
     }
 
     random = () => {
-        return Math.random() * 0.9 * canvas.width + 10
+        return Math.random() * 0.9 * csize + 10
     }
 
     create = (number, color, border) => {
@@ -105,8 +107,8 @@
                         a.x = 0
                         a.vx = -a.vx
                     }
-                    else if (a.x > canvas.width){
-                        a.x = canvas.width
+                    else if (a.x > csize){
+                        a.x = csize
                         a.vx = -a.vx
                     }
 
@@ -114,15 +116,15 @@
                         a.y = 0
                         a.vy = -a.vy
                     }
-                    else if (a.y > canvas.width){
-                        a.y = canvas.width
+                    else if (a.y > csize){
+                        a.y = csize
                         a.vy = -a.vy
                     }
                 } else {
-                    if (a.x < 0) a.x = canvas.width
-                    else if (a.x > canvas.width) a.x = 0
-                    if (a.y < 0) a.y = canvas.width
-                    else if (a.y > canvas.width) a.y = 0
+                    if (a.x < 0) a.x = csize
+                    else if (a.x > csize) a.x = 0
+                    if (a.y < 0) a.y = csize
+                    else if (a.y > csize) a.y = 0
                 }
             }
         }
@@ -130,8 +132,8 @@
     update = () => {
         rule(yellow, yellow, -0.0001)
         rule(green, yellow, -0.005)
-        field.clearRect(0, 0, canvas.width, canvas.width)
-        draw(0, 0, "black", canvas.width)
+        field.clearRect(0, 0, csize, csize)
+        draw(0, 0, "black", csize)
         for(i = 0; i < particles.length; i++){
             draw(particles[i].x, particles[i].y, particles[i].color, particle_size)
         }
