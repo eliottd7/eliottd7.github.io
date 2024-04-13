@@ -1,18 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Welcome!</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-<canvas id="main_board" width="500" height="500"></canvas>
+<head>
+    <style>
+        @media screen and (min-width: 200px) {
+            body {
+                background-color: black;
+                width: 90vw;
+                height: 90vh;
+                border: black;
+            }
 
+            div#main {
+                font-size: 3vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <canvas id="main_board"></canvas>
+    </div>
 <script>
 
-    canvas_size = 500
+    const canvas = document.getElementById("main_board");
+    const context = canvas.getContext('2d');
+    // resize the canvas to fill browser window dynamically
+    window.addEventListener('resize', resizeCanvas, false);
+
+    function resizeCanvas() {
+        canvas.width = 0.95*window.innerWidth;
+        canvas.height = 0.95*window.innerHeight;
+    }
+
+    resizeCanvas();
+
     particle_size = 1.5
     velocity_cap = 1
 
@@ -36,7 +56,7 @@
     }
 
     random = () => {
-        return Math.random() * 480 + 10
+        return Math.random() * 0.9 * canvas.width + 10
     }
 
     create = (number, color, border) => {
@@ -85,8 +105,8 @@
                         a.x = 0
                         a.vx = -a.vx
                     }
-                    else if (a.x > canvas_size){
-                        a.x = canvas_size
+                    else if (a.x > canvas.width){
+                        a.x = canvas.width
                         a.vx = -a.vx
                     }
 
@@ -94,39 +114,32 @@
                         a.y = 0
                         a.vy = -a.vy
                     }
-                    else if (a.y > canvas_size){
-                        a.y = canvas_size
+                    else if (a.y > canvas.width){
+                        a.y = canvas.width
                         a.vy = -a.vy
                     }
                 } else {
-                    if (a.x < 0) a.x = canvas_size
-                    else if (a.x > canvas_size) a.x = 0
-                    if (a.y < 0) a.y = canvas_size
-                    else if (a.y > canvas_size) a.y = 0
+                    if (a.x < 0) a.x = canvas.width
+                    else if (a.x > canvas.width) a.x = 0
+                    if (a.y < 0) a.y = canvas.width
+                    else if (a.y > canvas.width) a.y = 0
                 }
             }
         }
     }
-
     update = () => {
-        // rule(yellow, yellow, -0.001)
+        rule(yellow, yellow, -0.0001)
         rule(green, yellow, -0.005)
-
-        field.clearRect(0, 0, canvas_size, canvas_size)
-        draw(0, 0, "black", canvas_size)
-
+        field.clearRect(0, 0, canvas.width, canvas.width)
+        draw(0, 0, "black", canvas.width)
         for(i = 0; i < particles.length; i++){
             draw(particles[i].x, particles[i].y, particles[i].color, particle_size)
         }
         requestAnimationFrame(update)
-
     }
-
     // color = black if "hidden"
     green = create(10000, "green", false)
     yellow = create(5, "black", false)
     update();
-
 </script>
-  </body>
-</html>
+</body>
