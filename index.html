@@ -22,23 +22,21 @@
 <script>
 
     const canvas = document.getElementById("main_board");
-    const context = canvas.getContext('2d');
+    field = document.getElementById("main_board").getContext('2d')
+
     // resize the canvas to fill browser window dynamically
     window.addEventListener('resize', resizeCanvas, false);
-    csize = Math.min(canvas.width, canvas.height)
-
+    
     function resizeCanvas() {
-        canvas.width = 0.95*window.innerWidth;
-        canvas.height = 0.95*window.innerHeight;
-        csize = Math.min(canvas.width, canvas.height)
+        canvas.width = 0.98*window.innerWidth;
+        canvas.height = 0.98*window.innerHeight;
+        csize = 0.95 * Math.min(window.innerWidth, window.innerHeight)
     }
 
     resizeCanvas();
 
     particle_size = 1.5
-    velocity_cap = 1
-
-    field = document.getElementById("main_board").getContext('2d')
+    velocity_cap = 2
 
     draw = (x, y, color, s) => {
         field.fillStyle = color
@@ -58,7 +56,7 @@
     }
 
     random = () => {
-        return Math.random() * 0.9 * csize + 10
+        return Math.random() * csize * 0.99
     }
 
     create = (number, color, border) => {
@@ -101,40 +99,41 @@
                 a.x += a.vx
                 a.y += a.vy
 
-                
                 if(a.border){
-                    if (a.x < 0) {
+                    if (a.x > csize){
+                        a.x = csize - 1
+                        a.vx = -a.vx
+                    } 
+                    else if (a.x < 0) {
                         a.x = 0
                         a.vx = -a.vx
                     }
-                    else if (a.x > csize){
-                        a.x = csize
-                        a.vx = -a.vx
+                    if (a.y > csize){
+                        a.y = csize - 1
+                        a.vy = -a.vy
                     }
-
-                    if (a.y < 0) {
+                    else if (a.y < 0) {
                         a.y = 0
                         a.vy = -a.vy
                     }
-                    else if (a.y > csize){
-                        a.y = csize
-                        a.vy = -a.vy
-                    }
+
                 } else {
-                    if (a.x < 0) a.x = csize
-                    else if (a.x > csize) a.x = 0
-                    if (a.y < 0) a.y = csize
-                    else if (a.y > csize) a.y = 0
+                    if (a.x > csize) a.x = 0
+                    else if (a.x < 0) a.x = csize
+                    if (a.y > csize) a.y = 0
+                    else if (a.y < 0) a.y = csize
                 }
             }
         }
     }
 
     update = () => {
-        // rule(yellow, yellow, -0.001)
-        rule(green, yellow, -0.005)
+        rule(yellow, gravity, -0.1)
+        rule(yellow, yellow, -0.001)
+        rule(green, yellow, -0.004)
+        rule(green, gravity, -0.001)
 
-        field.clearRect(0, 0, csize, csize)
+        field.clearRect(0, 0, csize + 1, csize + 1)
         draw(0, 0, "black", csize)
 
         for(i = 0; i < particles.length; i++){
@@ -146,7 +145,8 @@
 
     // color = black if "hidden"
     green = create(20000, "green", false)
-    yellow = create(5, "yellow", false)
+    yellow = create(3, "yellow", false)
+    gravity = [particle(csize/2, csize/2, "black", false)]
     update();
 
     
