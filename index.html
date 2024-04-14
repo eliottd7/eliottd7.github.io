@@ -13,37 +13,50 @@
                 font-size: 3vw;
             }
         }
+
+        h1{
+            font-family: monospace;
+            color: white;
+        }
     </style>
+    <title>Eliott Dinfotan</title>
 </head>
 <body>
+    <div>
+        <h1 id="nametag"></h1>
+    </div>
     <div id="main">
-        <canvas id="main_board"></canvas>
+        <canvas id="simulation"></canvas>
     </div>
 <script>
 
-    const canvas = document.getElementById("main_board");
-    field = document.getElementById("main_board").getContext('2d')
+    const canvas = document.getElementById("simulation");
+    field = document.getElementById("simulation").getContext('2d')
 
     // resize the canvas to fill browser window dynamically
     window.addEventListener('resize', resizeCanvas, false);
-    
     function resizeCanvas() {
-        canvas.width = 0.98*window.innerWidth;
-        canvas.height = 0.98*window.innerHeight;
+        canvas.width = 0.95*window.innerWidth;
+        canvas.height = 0.95*window.innerHeight;
         csize = 0.95 * Math.min(window.innerWidth, window.innerHeight)
     }
-
     resizeCanvas();
 
+    // Particle Simulation Global Parameters
     particle_size = 1.5
-    velocity_cap = 2
+    velocity_cap = 1.5
+    particles = []
+
+    
+    random = () => {
+        return Math.random() * csize
+    }
 
     draw = (x, y, color, s) => {
         field.fillStyle = color
         field.fillRect(x, y, s, s)
     }
 
-    particles = []
     particle = (x, y, color, border_type) => {
         return {
             "x":x,
@@ -55,14 +68,19 @@
         }
     }
 
-    random = () => {
-        return Math.random() * csize * 0.99
-    }
-
     create = (number, color, border) => {
         group = []
         for (let i = 0; i < number; i++){
             group.push(particle(random(), random(), color, border))
+            particles.push(group[i])
+        }
+        return group
+    }
+
+    create_at = (x, y, number, color, border) => {
+        group = []
+        for (let i = 0; i < number; i++){
+            group.push(particle(x, y, color, border))
             particles.push(group[i])
         }
         return group
@@ -102,19 +120,19 @@
                 if(a.border){
                     if (a.x > csize){
                         a.x = csize - 1
-                        a.vx = -a.vx
+                        a.vx = -a.vx + Math.random()
                     } 
                     else if (a.x < 0) {
                         a.x = 0
-                        a.vx = -a.vx
+                        a.vx = -a.vx + Math.random()
                     }
                     if (a.y > csize){
                         a.y = csize - 1
-                        a.vy = -a.vy
+                        a.vy = -a.vy + Math.random()
                     }
                     else if (a.y < 0) {
                         a.y = 0
-                        a.vy = -a.vy
+                        a.vy = -a.vy + Math.random()
                     }
 
                 } else {
@@ -127,29 +145,55 @@
         }
     }
 
-    update = () => {
-        rule(yellow, gravity, -0.1)
-        rule(yellow, yellow, -0.001)
-        rule(green, yellow, -0.004)
-        rule(green, gravity, -0.001)
+    follow_mouse = false
+    function handlemouseclick(event){
+        if(follow_mouse){
+            follow_mouse = false
+            mouse = []
+        } else {
+            follow_mouse = true
+            mouse = create_at(event.pageX, event.pageY, 1, "black", false)
+        }
+    }
+    function handlemousemove(event){
+        if(follow_mouse){
+            mouse[0].x = event.pageX
+            mouse[0].y = event.pageY
+        }
+    }
+    document.onmousedown = handlemouseclick
+    document.onmouseup = handlemouseclick
+    document.onmousemove = handlemousemove
 
-        field.clearRect(0, 0, csize + 1, csize + 1)
-        draw(0, 0, "black", csize)
+
+    
+    update = () => {
+        // Add rules for interactions here:
+        // rule(target, source, force)
+        // force < 0 --> attraction
+        // force > 0 --> repulsion
+        rule(yellow, yellow, -0.001)
+        rule(green, yellow, -0.005)
+        rule(yellow, mouse, -0.1)
+
+        // working canvas
+        field.clearRect(0, 0, csize + particle_size, csize + particle_size)
 
         for(i = 0; i < particles.length; i++){
             draw(particles[i].x, particles[i].y, particles[i].color, particle_size)
         }
         requestAnimationFrame(update)
-
     }
 
-    // color = black if "hidden"
-    green = create(20000, "green", false)
-    yellow = create(3, "yellow", false)
-    gravity = [particle(csize/2, csize/2, "black", false)]
-    update();
+    // set color to "black" for "hidden"
 
+    // this is "behind" all other points
+    yellow = create(3, "black", false)
+    green = create(20000, "green", true)
+    mouse = []
+    // this is "in front of" all other points
     
+    update();
 
 </script>
 </body>
