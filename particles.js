@@ -14,7 +14,6 @@ particle_size = 1.5
 velocity_cap = 1.5
 particles = []
 
-
 randomX = () => {
     return Math.random() * canvas.width
 }
@@ -115,14 +114,64 @@ rule = (part1, part2, g) => {
     }
 }
 
+direction = true
+pgreen = 255
+pblue = 0
+setInterval(function(){
+    if(direction){
+        pgreen -= 1
+        pblue += 1
+    } else {
+        pgreen += 1
+        pblue -= 1
+    }
+
+    if(pgreen < 0){
+        pgreen = 0
+        direction = false
+    }
+    else if(pblue < 0){
+        pblue = 0
+        direction = true
+    }
+}, 100)
+
+update = () => {
+    
+    colorstring = "rgb(0, " + pgreen.toString() + ", " + pblue.toString() + ")"
+
+    rule(green, yellow, -0.005)
+    rule(yellow, mouse, -0.5)
+    rule(yellow, gravity, -0.5)
+    rule(yellow, yellow, 0.08)
+    field.clearRect(0, 0, canvas.width + particle_size, canvas.height + particle_size)
+    for(i = 5; i < particles.length; i++){
+        draw(particles[i].x, particles[i].y, colorstring, particle_size)
+    }
+    requestAnimationFrame(update)
+}
+
+yellow = create(3, "black", true)
+mouse = []
+gravity = create_at(canvas.width / 2, canvas.height / 2, 1, "black", false)
+green = create(20000, "#00dead", true)
+
+
 follow_mouse = false
 function handlemouseclick(event){
     if(follow_mouse){
+        particles.pop()
         follow_mouse = false
+        gravity = mouse
+        gravity[0].x = canvas.width / 2
+        gravity[0].y = canvas.height / 2
         mouse = []
     } else {
         follow_mouse = true
-        mouse = create_at(event.pageX, event.pageY, 1, "black", false)
+        mouse = gravity
+        mouse[0].x = event.pageX
+        mouse[0].y = event.pageY
+        gravity = []
     }
 }
 function handlemousemove(event){
@@ -134,33 +183,5 @@ function handlemousemove(event){
 document.onmousedown = handlemouseclick
 document.onmouseup = handlemouseclick
 document.onmousemove = handlemousemove
-
-
-
-update = () => {
-    // Add rules for interactions here:
-    // rule(target, source, force)
-    // force < 0 --> attraction
-    // force > 0 --> repulsion
-    rule(yellow, yellow, -0.001)
-    rule(green, yellow, -0.005)
-    rule(yellow, mouse, -0.1)
-
-    // clears frame
-    field.clearRect(0, 0, canvas.width + particle_size, canvas.height + particle_size)
-
-    for(i = 0; i < particles.length; i++){
-        draw(particles[i].x, particles[i].y, particles[i].color, particle_size)
-    }
-    requestAnimationFrame(update)
-}
-
-// set color to "black" for "hidden"
-
-// this is "behind" all other points
-yellow = create(3, "black", false)
-green = create(20000, "green", true)
-mouse = []
-// this is "in front of" all other points
 
 update();
