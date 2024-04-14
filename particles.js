@@ -1,32 +1,79 @@
+// Particle Simulation javascript
+// (C) Eliott Dinfotan 2024
+// with code framework from BrainXYZ
+// Ask for permission before commercial redistribution.
+
 const canvas = document.getElementById("simulation");
-field = document.getElementById("simulation").getContext('2d')
+var field = document.getElementById("simulation").getContext('2d')
 
 // resize the canvas to fill browser window dynamically
 window.addEventListener('resize', resizeCanvas, false);
 function resizeCanvas() {
-    canvas.width = 0.95*window.innerWidth;
-    canvas.height = 0.95*window.innerHeight;
+    canvas.width = 0.99*window.innerWidth;
+    canvas.height = 0.99*window.innerHeight;
 }
 resizeCanvas();
 
-// Particle Simulation Global Parameters
-particle_size = 1.5
-velocity_cap = 1.5
-particles = []
+// Particle classes
+var yellow = create(3, "black", true)
+var mouse = []
+var gravity = create_at(canvas.width / 2, canvas.height / 2, 1, "black", false)
+var green = create(20000, "#00dead", true)
+var follow_mouse = false
 
-randomX = () => {
+// other globals
+var particle_size = 1.5
+var velocity_cap = 1.5
+var particles = []
+var direction = true
+var pgreen = 255
+var pblue = 0
+
+// call this first to show all the dots
+update();
+
+// check screen size periodically
+setInterval(function(){
+    resizeCanvas()
+    gravity[0].x = canvas.width / 2
+    gravity[0].y = canvas.height / 2
+}, 5000)
+
+function handlemouseclick(event){
+    if(follow_mouse){
+        follow_mouse = false
+        gravity = mouse
+        gravity[0].x = canvas.width / 2
+        gravity[0].y = canvas.height / 2
+        mouse = []
+    } else {
+        follow_mouse = true
+        mouse = gravity
+        mouse[0].x = event.pageX
+        mouse[0].y = event.pageY
+        gravity = []
+    }
+}
+function handlemousemove(event){
+    if(follow_mouse){
+        mouse[0].x = event.pageX
+        mouse[0].y = event.pageY
+    }
+}
+document.onmousedown = handlemouseclick
+document.onmouseup = handlemouseclick
+document.onmousemove = handlemousemove
+
+// Helpers for initializing the simulation
+function randomX() {
     return Math.random() * canvas.width
 }
-randomY = () => {
+
+function randomY() {
     return Math.random() * canvas.height
 }
 
-draw = (x, y, color, s) => {
-    field.fillStyle = color
-    field.fillRect(x, y, s, s)
-}
-
-particle = (x, y, color, border_type) => {
+function particle(x, y, color, border_type) {
     return {
         "x":x,
         "y":y,
@@ -37,7 +84,7 @@ particle = (x, y, color, border_type) => {
     }
 }
 
-create = (number, color, border) => {
+function create(number, color, border) {
     group = []
     for (let i = 0; i < number; i++){
         group.push(particle(randomX(), randomY(), color, border))
@@ -46,7 +93,7 @@ create = (number, color, border) => {
     return group
 }
 
-create_at = (x, y, number, color, border) => {
+function create_at(x, y, number, color, border) {
     group = []
     for (let i = 0; i < number; i++){
         group.push(particle(x, y, color, border))
@@ -55,18 +102,21 @@ create_at = (x, y, number, color, border) => {
     return group
 }
 
-rule = (part1, part2, g) => {
+// particle interactions
+function rule(part1, part2, g) {
     for(let i = 0; i < part1.length; i++){
-        fx = 0
-        fy = 0
+        let fx = 0
+        let fy = 0
 
         for(let j = 0; j < part2.length; j++){
             a = part1[i]
             b = part2[j]
 
-            dx = a.x - b.x
-            dy = a.y - b.y
-            d = Math.sqrt(dx * dx + dy * dy)
+            let dx = a.x - b.x
+            let dy = a.y - b.y
+            let d = Math.sqrt(dx * dx + dy * dy)
+
+            let F = 0
 
             if (d > 0) {
                 F = g * 1 / d
@@ -114,9 +164,7 @@ rule = (part1, part2, g) => {
     }
 }
 
-direction = true
-pgreen = 255
-pblue = 0
+// color shifting
 setInterval(function(){
     if(direction){
         pgreen -= 1
@@ -136,10 +184,14 @@ setInterval(function(){
     }
 }, 100)
 
-update = () => {
-    
-    colorstring = "rgb(0, " + pgreen.toString() + ", " + pblue.toString() + ")"
+// frame generation
+function draw(x, y, color, s) {
+    field.fillStyle = color
+    field.fillRect(x, y, s, s)
+}
 
+function update() {
+    let colorstring = "rgb(0, " + pgreen.toString() + ", " + pblue.toString() + ")"
     rule(green, yellow, -0.005)
     rule(yellow, mouse, -0.5)
     rule(yellow, gravity, -0.5)
@@ -150,38 +202,3 @@ update = () => {
     }
     requestAnimationFrame(update)
 }
-
-yellow = create(3, "black", true)
-mouse = []
-gravity = create_at(canvas.width / 2, canvas.height / 2, 1, "black", false)
-green = create(20000, "#00dead", true)
-
-
-follow_mouse = false
-function handlemouseclick(event){
-    if(follow_mouse){
-        particles.pop()
-        follow_mouse = false
-        gravity = mouse
-        gravity[0].x = canvas.width / 2
-        gravity[0].y = canvas.height / 2
-        mouse = []
-    } else {
-        follow_mouse = true
-        mouse = gravity
-        mouse[0].x = event.pageX
-        mouse[0].y = event.pageY
-        gravity = []
-    }
-}
-function handlemousemove(event){
-    if(follow_mouse){
-        mouse[0].x = event.pageX
-        mouse[0].y = event.pageY
-    }
-}
-document.onmousedown = handlemouseclick
-document.onmouseup = handlemouseclick
-document.onmousemove = handlemousemove
-
-update();

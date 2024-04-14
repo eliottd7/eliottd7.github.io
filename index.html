@@ -1,16 +1,35 @@
 <!DOCTYPE html>
 <head>
     <style>
-        @media screen and (min-width: 200px) {
-            body {
-                background-color: black;
-                width: 90vw;
-                height: 90vh;
-                border: black;
-            }
 
-            div#main {
-                font-size: 3vw;
+        body {
+            background-color: black;
+            width: 100vw;
+            height: 100vh;
+            border: black;
+            overflow: hidden;
+        }
+
+        @media screen and (min-height:400px){
+            p {
+                font-size: 3vh;
+            }
+            h1 {
+                font-size: 7vh;
+            }
+            #sideMenu {
+                margin-top: 15vh;
+            }
+        }
+        @media screen and (max-height:400px){
+            p {
+                font-size: 12px;
+            }
+            h1 {
+                font-size: 35px;
+            }
+            #sideMenu {
+                margin-top: 80px;
             }
         }
 
@@ -19,19 +38,67 @@
             color: white;
         }
 
-        #main {
-            margin: auto;
-            width: 95%;
+        p {
+            color: #333333;
+            font-family: monospace;
         }
+
+        div.background {
+            margin: auto;
+            width: 100%;
+            height: 100%;
+        }
+
+        div.foreground {
+            margin:auto;
+        }
+
+        .overlapped {
+            position: absolute;
+        }
+
+        .content {
+            position: static;
+        }
+
     </style>
     <title>Eliott Dinfotan</title>
 </head>
 <body>
-    <div>
-        <h1 id="nametag"></h1>
+    <div class="background overlapped">
+        <div>
+            <canvas class="overlapped" id="simulation"></canvas>
+            <h1 class="overlapped" id="nametag">:</h1>
+        </div>
     </div>
-    <div id="main">
-        <canvas id="simulation"></canvas>
+    <div class="foreground overlapped">
+        <div class="content">
+            <div id="sideMenu">
+                <menu>
+                    <p>computer engineer \\</p>
+                    <p>student \\</p>
+                    <p>explorer \\</p>
+                </menu>
+            </div>
+        </div>
     </div>
+
     <script src="./particles.js"></script>
+    <script id="nametag_type_effect">
+        const name = "eliott dinfotan"
+        var shown = ">> "
+        var shown_index = 0
+
+        var intervalID = setInterval(function(){
+            document.getElementById("nametag").innerHTML = shown
+            shown = shown + name[shown_index]
+            shown_index += 1
+        }, 100)
+
+        setInterval(function(){
+            if(shown_index > name.length){
+                clearInterval(intervalID)
+            }
+        })
+    </script>
 </body>
