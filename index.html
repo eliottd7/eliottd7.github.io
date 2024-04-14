@@ -4,8 +4,8 @@
         @media screen and (min-width: 200px) {
             body {
                 background-color: black;
-                width: 95vw;
-                height: 95vh;
+                width: 90vw;
+                height: 90vh;
                 border: black;
             }
 
@@ -17,7 +17,6 @@
 </head>
 <body>
     <div id="main">
-        <p color="white">eliott dinfotan \\ student, computer engineer, explorer</p>
         <canvas id="main_board"></canvas>
     </div>
 <script>
@@ -130,19 +129,27 @@
             }
         }
     }
+
     update = () => {
-        rule(yellow, yellow, -0.0001)
+        // rule(yellow, yellow, -0.001)
         rule(green, yellow, -0.005)
+
         field.clearRect(0, 0, csize, csize)
         draw(0, 0, "black", csize)
+
         for(i = 0; i < particles.length; i++){
             draw(particles[i].x, particles[i].y, particles[i].color, particle_size)
         }
         requestAnimationFrame(update)
+
     }
+
     // color = black if "hidden"
-    green = create(10000, "green", false)
-    yellow = create(5, "black", false)
+    green = create(20000, "green", false)
+    yellow = create(5, "yellow", false)
     update();
+
+    
+
 </script>
 </body>
