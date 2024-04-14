@@ -14,20 +14,20 @@ function resizeCanvas() {
 }
 resizeCanvas();
 
-// Particle classes
-var yellow = create(3, "black", true)
-var mouse = []
-var gravity = create_at(canvas.width / 2, canvas.height / 2, 1, "black", false)
-var green = create(20000, "#00dead", true)
-var follow_mouse = false
-
-// other globals
+// particle simulation globals
 var particle_size = 1.5
 var velocity_cap = 1.5
 var particles = []
 var direction = true
 var pgreen = 255
 var pblue = 0
+
+// Particle classes
+var yellow = create(3, "black", true)
+var mouse = []
+var gravity = create_at(canvas.width / 2, canvas.height / 2, 1, "black", false)
+var green = create(20000, "#00dead", true)
+var follow_mouse = false
 
 // call this first to show all the dots
 update();
@@ -37,7 +37,7 @@ setInterval(function(){
     resizeCanvas()
     gravity[0].x = canvas.width / 2
     gravity[0].y = canvas.height / 2
-}, 5000)
+}, 2000)
 
 function handlemouseclick(event){
     if(follow_mouse){
